@@ -1,0 +1,14 @@
+{% include "header.html" %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ blog.title }}</title>
+  </head>
+  <body>
+    <div class="container">
+      <div>{{ blog.blog_html_text|safe }}</div>
+      <a href="{% url 'blog-list' %}">Back to Blog List</a>
+    </div>
+  </body>
+</html>

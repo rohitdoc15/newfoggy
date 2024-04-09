@@ -1,0 +1,1098 @@
+
+{% load static %}
+{% include "header.html" %}
+<head> 
+    <title>Insightful Data about Indian Media | Trending News topics, Charts | Foggymedia</title>
+    <meta name="description" content="Explore the latest trending topics in Indian media and gain insights with charts depicting the most used terms in news titles. Stay informed with our dynamic data based on trending news in the country.">
+  </head>  
+
+
+<div class="swiper-container overflow-x-auto swiper-scrollbar" style="scrollbar-width: thin; scrollbar-color: transparent transparent;">
+    <div class="swiper-wrapper" style="display: flex;">
+        {% for channel in channels %}
+        <div class="swiper-slide" style="flex: 1 0 auto;">
+            <div class="filter rounded-full overflow-hidden bg-[gray-300] flex items-center justify-center">
+                <img 
+                src="{{ channel.logo.url }}" 
+                alt="{{ channel.name }} Logo" 
+                class="max-w-full max-h-full object-cover rounded-full filter brightness-50 contrast-150 grayscale-100"
+                onclick="loadStory('/story/{{ channel.name }}', event)"
+                >
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<script>
+    function loadStory(url, event) {
+        event.preventDefault();
+        window.location.href = url;
+    }
+
+    // Initialize Swiper
+    var swiper = new Swiper('.swiper-container', {
+        direction: 'horizontal',
+        slidesPerView: 'auto',
+        freeMode: true,
+        scrollbar: {
+            el: '.swiper-scrollbar',
+        },
+        mousewheel: true,
+        grabCursor: true, // Enable mouse grabbing
+    });
+
+    // Add touch events for story navigation
+    var touchStartX = 0;
+    var touchEndX = 0;
+
+    var swiperContainer = document.querySelector('.swiper-container');
+    var hammertime = new Hammer(swiperContainer);
+
+    hammertime.on('swiperight', function() {
+        navigateToPreviousStory();
+    });
+
+    hammertime.on('swipeleft', function() {
+        navigateToNextStory();
+    });
+
+    function navigateToPreviousStory() {
+        // Logic to navigate to the previous story
+        console.log('Navigating to the previous story');
+    }
+
+    function navigateToNextStory() {
+        // Logic to navigate to the next story
+        console.log('Navigating to the next story');
+    }
+
+    window.addEventListener('popstate', function(event) {
+        location.reload();
+    });
+</script>
+
+
+    
+  
+    <div class="bg-gray-800 mt-2 mx-3 rounded border border-gray-600 p-2 text-xs text-white">
+    Total Channel Tracking: <a href="{% url 'channel_list' %}" class="text-[#FF4560] underline hover:text-blue-300">{{ channels.count }}</a>,
+    Last crawl: {{ latest_video_timestamp }}
+    </div>
+  
+    <div class ="lg:grid lg:grid-cols-2 ">
+        <div>
+        <div class="mt-4 mb-2 mx-3 shadow-lg  rounded-md border border-[#787A91] border-opacity-50 bg-gray-900 text-[#EEEEEE] lg:h-[75%] lg:mt-6" >
+            <h2 class="text-[#FF4560]  font-bold mb-4 px-4 py-2 ">Trending Topics<button id="trendingTopics" class="text-white shadow-lg rounded-full focus:outline-none">
+                <i class="fas fa-info-circle fa-xs text-[#ff4560] p-1"></i>
+            </button></h2>
+
+
+            {% for topic in topics %}
+            <form method="POST" action="/topic-page/">
+                {% csrf_token %}
+                <input type="hidden" name="topic" value="{{ topic.topic.topic }}">
+                <div class="mb-4 cursor-pointer hover:bg-gray-700" onclick="this.parentNode.submit()">
+                    <div class="text-[#787A91] font-bold">#{{ topic.topic.topic }}</div>
+                </div>
+                <hr class="border-blue-500">
+            </form>
+            {% endfor %}
+
+            <form method="POST" class="-mb-2" action="/topic-page/">
+                {% csrf_token %}
+                <input type="hidden" name="topic" value="{{ topic1.topic.topic }}">
+                <div class="mb-4 -mt-4 cursor-pointer hover:bg-gray-700" onclick="this.parentNode.submit()">
+                    <div class="flex justify-between items-center px-4 py-1">
+                        <div class="text-3xl font-bold">#{{ topic1.topic.topic }}</div>
+                        {% if topic1.trend_indicator == 'upwards' %}
+                        <i class="fa-solid fa-arrow-trend-up" style="color: #00e396;"></i>
+                        {% elif topic1.trend_indicator == 'downwards' %}
+                            <i class="fa-solid fa-arrow-trend-down" style="color: #ff4560;"></i>
+                        {% else %}
+                                <i class="fa-solid fa-arrow-right" style="color: #008ffb;"></i>
+                            {% endif %}
+                            </div>
+                    <hr class="border-[#787A91] border-opacity-50 h-px">
+                </div>
+            </form>
+            
+            <form method="POST" class="-mb-2" action="/topic-page/">
+                {% csrf_token %}
+                <input type="hidden" name="topic" value="{{ topic2.topic.topic }}">
+                <div class="mb-4 cursor-pointer hover:bg-gray-700" onclick="this.parentNode.submit()">
+                    <div class="flex justify-between items-center px-4 py-1">
+                        <div class=" text-2xl opacity-90  font-bold">#{{ topic2.topic.topic }}</div>
+                        {% if topic2.trend_indicator == 'upwards' %}
+                            <i class="fa-solid fa-arrow-trend-up" style="color: #00e396;"></i>
+                        {% elif topic2.trend_indicator == 'downwards' %}
+                            <i class="fa-solid fa-arrow-trend-down" style="color: #ff4560;"></i>
+                        {% else %}
+                            <i class="fa-solid fa-arrow-right" style="color: #008ffb;"></i>
+                        {% endif %}
+                    </div>
+                    <hr class="border-[#787A91] border-opacity-50 h-px">
+                </div>
+                
+            </form>
+        
+            <form method="POST" class="-mb-2" action="/topic-page/">
+                {% csrf_token %}
+                <input type="hidden" name="topic" value="{{ topic3.topic.topic }}">
+                <div class="mb-4 cursor-pointer hover:bg-gray-700" onclick="this.parentNode.submit()">
+                    <div class="flex justify-between items-center px-4 py-1">
+
+                    <div class=" text-xl opacity-80 font-bold ">#{{ topic3.topic.topic }}</div>
+                    {% if topic3.trend_indicator == 'upwards' %}
+                            <i class="fa-solid fa-arrow-trend-up" style="color: #00e396;"></i>
+                        {% elif topic3.trend_indicator == 'downwards' %}
+                            <i class="fa-solid fa-arrow-trend-down" style="color: #ff4560;"></i>
+                        {% else %}
+                            <i class="fa-solid fa-arrow-right" style="color: #008ffb;"></i>
+                        {% endif %}
+                    </div>
+                    <hr class="border-[#787A91] border-opacity-50 h-px ">
+                </div>
+            
+            </form>
+            <form method="POST" class="-mb-2" action="/topic-page/">
+                {% csrf_token %}
+                <input type="hidden" name="topic" value="{{ topic4.topic.topic }}">
+                <div class="mb-4 cursor-pointer hover:bg-gray-700" onclick="this.parentNode.submit()">
+                    <div class="flex justify-between items-center px-4 py-1">
+                    <div class=" text-lg opacity-70 font-bold ">#{{ topic4.topic.topic }}</div>
+                    {% if topic3.trend_indicator == 'upwards' %}
+                            <i class="fa-solid fa-arrow-trend-up" style="color: #00e396;"></i>
+                        {% elif topic3.trend_indicator == 'downwards' %}
+                            <i class="fa-solid fa-arrow-trend-down" style="color: #ff4560;"></i>
+                        {% else %}
+                            <i class="fa-solid fa-arrow-right" style="color: #008ffb;"></i>
+                        {% endif %}
+                    </div>
+                    <hr class="border-[#787A91] border-opacity-50 h-px">
+                </div>
+                
+            </form>
+            <form method="POST" class="" action="/topic-page/">
+                {% csrf_token %}
+                <input type="hidden" name="topic" value="{{ topic5.topic.topic }}">
+                <div class="cursor-pointer hover:bg-gray-700" onclick="this.parentNode.submit()">
+                    <div class="flex justify-between items-center px-4 py-1">
+                    <div class=" text-sm opacity-70 font-bold ">#{{ topic5.topic.topic }}</div>
+                    {% if topic4.trend_indicator == 'upwards' %}
+                            <i class="fa-solid fa-arrow-trend-up" style="color: #00e396;"></i>
+                        {% elif topic4.trend_indicator == 'downwards' %}
+                            <i class="fa-solid fa-arrow-trend-down" style="color: #ff4560;"></i>
+                        {% else %}
+                            <i class="fa-solid fa-arrow-right" style="color: #008ffb;"></i>
+                        {% endif %}
+                    </div>
+                
+                </div>
+                
+            </form>
+        </div>
+        <style>
+            /* Hide scrollbar for Chrome, Safari and Opera */
+            .hide-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+        
+            /* Hide scrollbar for Firefox */
+            .hide-scrollbar {
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+        </style>
+        
+            <div class="flex flex-row gap-1 lg:grid-cols-5 whitespace-nowrap mx-3 mb-3 overflow-x-scroll hide-scrollbar">
+                {% if topic6 %}
+                <form method="POST" action="/topic-page/" class=" items-center shadow-lg rounded-md border border-[#787A91] border-opacity-50 bg-gray-900 text-[#EEEEEE]">
+                    {% csrf_token %}
+                    
+                    <button type="submit" class=" cursor-pointer hover:bg-gray-700">
+                        <div class="flex justify-between items-center px-2 py-1">
+                            <div class="text-xs opacity-70 ">#{{ topic6.topic.topic }}</div>
+                        </div>
+                    </button>
+                </form>
+                {% endif %}
+            
+                {% if topic7 %}
+                <form method="POST" action="/topic-page/" class="  items-center shadow-lg pb-0 rounded-md border border-[#787A91] border-opacity-50 bg-gray-900 text-[#EEEEEE]">
+                    {% csrf_token %}
+                    <input type="hidden" name="topic" value="{{ topic7.topic.topic }}">
+                    <button type="submit" class=" cursor-pointer hover:bg-gray-700">
+                        <div class="flex justify-between items-center px-2 py-1">
+                            <div class="text-xs opacity-70">#{{ topic7.topic.topic }}</div>
+                        </div>
+                    </button>
+                </form>
+                {% endif %}
+            
+                {% if topic8 %}
+                <form method="POST" action="/topic-page/" class=" items-center shadow-lg pb-0 rounded-md border border-[#787A91] border-opacity-50 bg-gray-900 text-[#EEEEEE]">
+                    {% csrf_token %}
+                    <input type="hidden" name="topic" value="{{ topic8.topic.topic }}">
+                    <button type="submit" class=" cursor-pointer hover:bg-gray-700">
+                        <div class="flex justify-between items-center px-2 py-1">
+                            <div class="text-xs opacity-70">#{{ topic8.topic.topic }}</div>
+                        </div>
+                    </button>
+                </form>
+                {% endif %}
+            
+                {% if topic9 %}
+                <form method="POST" action="/topic-page/" class="  items-center shadow-lg pb-0 rounded-md border border-[#787A91] border-opacity-50 bg-gray-900 text-[#EEEEEE]">
+                    {% csrf_token %}
+                    <input type="hidden" name="topic" value="{{ topic9.topic.topic }}">
+                    <button type="submit" class=" cursor-pointer hover:bg-gray-700">
+                        <div class="flex justify-between items-center px-2 py-1">
+                            <div class="text-xs opacity-70">#{{ topic9.topic.topic }}</div>
+                        </div>
+                    </button>
+                </form>
+                {% endif %}
+            
+                {% if topic10 %}
+                <form method="POST" action="/topic-page/" class="shadow-lg items-center pb-0 rounded-md border border-[#787A91] border-opacity-50 bg-gray-900 text-[#EEEEEE]">
+                    {% csrf_token %}
+                    <input type="hidden" name="topic" value="{{ topic10.topic.topic }}">
+                    <button type="submit" class=" cursor-pointer hover:bg-gray-700">
+                        <div class="flex justify-between items-center px-2 py-1">
+                            <div class="text-xs opacity-70">#{{ topic10.topic.topic }}</div>
+                        </div>
+                    </button>
+                </form>
+                {% endif %}
+            
+            
+            </div>   
+            
+        </div>
+
+
+        
+
+    <!-- Area Chart Section -->
+    <div id="monthlyTrends" class="h-96 border-t border-gray-700 rounded-lg shadow-lg lg:border-none justify-center">
+        <h2
+        class="text-[#FF4560] px-4 items-center flex flex-row justify-center text-xs lg:text-sm font-bold py-2 lg:mt-6 "
+        >
+        News trends over the past 
+        <button
+        id="toggleButton"
+        onclick="toggleData()"
+        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-1 focus:outline-none focus:ring-blue-300 font-medium rounded-r-lg text-xs px-2 mx-1 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        Month
+        <i class="fa-solid fa-caret-down fa-sm px-1" style="color: #ffffff;"></i>
+        </button>
+        <button id="monthlyTrend" class="text-white shadow-lg rounded-full focus:outline-none">
+            <i class="  fas fa-info-circle lg:fa-xs fa-md  text-[#ff4560] p-1"></i>
+        </button>
+        </h2>
+        <div class="flex justify-end mr-4">
+            <button onclick="downloadElementAsImage('monthlyTrends', 'monthlytrendschart.png')">
+                <i class="fa-solid fa-circle-arrow-down fa-sm shadow-lg p-1 text-gray-500" ></i>
+            </button>
+        </div>
+        <div id="loader" class="flex justify-center mx-auto mt-28"></div>
+        <div id="chartContainer" class="w-full h-350"></div>
+    </div>
+
+
+    <script>
+    let isMonthly = true;
+    const loader = document.getElementById("loader");
+    loader.style.display = "block"; // Show the loader
+
+    function toggleData() {
+    const toggleButton = document.getElementById("toggleButton");
+    const duration = isMonthly ? "weekly" : "monthly";
+
+    if (isMonthly) {
+        toggleButton.innerHTML = 'Week <i class="fa-solid fa-caret-down fa-sm px-1" style="color: #ffffff;"></i>';
+    } else {
+        toggleButton.innerHTML = 'Month <i class="fa-solid fa-caret-down fa-sm px-1" style="color: #ffffff;"></i>';
+    }
+
+    fetch(`/video-trend-chart/${duration}/`)
+    .then((response) => response.json())
+    .then((data) => {
+        if (chart) {
+        chart.destroy(); // Remove the existing chart
+        }
+
+        const chartContainer = document.getElementById("chartContainer");
+        chartContainer.innerHTML = ""; // Clear the chart container
+
+        chart = new ApexCharts(chartContainer, getChartOptions(data));
+        chart.render();
+        loader.style.display = "none";
+    });
+
+    isMonthly = !isMonthly;
+    }
+
+    function getChartOptions(data) {
+    return {
+    series: data.series,
+    chart: {
+        type: "area",
+        height: 300,
+        foreColor: "#ffffff",
+        fontFamily: "Geologica, sans-serif",
+        fontSize: "15px",
+        stacked: false,
+        toolbar: {
+        show: false,
+        },
+        background: {
+            opacity: 0,
+        },
+        zoom: {
+        enabled: false,
+        },
+    },
+        legend: {
+            show: true,
+            labels: {
+                colors: ['#ffffff']
+                
+            },
+            fontSize: '11px',
+        },    
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+        dataLabels: {
+            enabled: false
+        },
+        theme: {
+            mode: 'dark',
+            palette: 'palette1', // up to palette10
+        },
+    xaxis: {
+        type: 'datetime',
+        categories: data.xaxis.categories,
+        labels: {
+            rotate: 0,
+            rotateAlways: true,
+            hideOverlappingLabels: true,
+        style: {
+            colors: [],
+            fontSize: "10px",
+            cssClass: 'apexcharts-xaxis-label',
+        },
+        },
+        axisBorder: {
+        show: false,
+        
+        },
+        axisTicks: {
+        show: false,
+        
+        },
+    },
+    fill: {
+        type: "gradient",
+        gradient: {
+            shadeIntensity: 1,
+            inverseColors: false,
+            opacityFrom: 0.6,
+            opacityTo: 0.05,
+            stops: [20, 100, 100, 100]
+        }
+    },
+    yaxis: {
+        labels: {
+        style: {
+            color: "#828282",
+            fontSize: "12px",
+        },
+        formatter: function (val) {
+            return val.toFixed(0);
+        },
+        },
+        axisBorder: {
+        show: true,
+        color: "#828282",
+        },
+        axisTicks: {
+        show: true,
+        color: "#828282",
+        },
+    },
+    
+    stroke: {
+        curve: "smooth",
+    },
+    tooltip: {
+        enabled: true,
+        theme: "dark",
+        x: {
+        show: true,
+        format: "dd MMM",
+        },
+    },
+    };
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const loader = document.getElementById("loader");
+        loader.style.display = "block"; // Show the loader
+    fetch("/video-trend-chart/monthly/")
+    .then((response) => response.json())
+    .then((data) => {
+        const chartContainer = document.getElementById("chartContainer");
+        chart = new ApexCharts(chartContainer, getChartOptions(data));
+        chart.render();
+        loader.style.display = "none";
+    });
+    });
+    </script>
+        <!-- Popular Person Chart Section -->
+        <div id="celeb" class=" border-t border-gray-700 rounded-lg shadow-lg lg:border-none">
+            <h2 class="text-[#FF4560] px-4 flex flex-row justify-center text-xs lg:text-sm font-bold py-2 lg:mt-6 ">Influential figures making headlines
+                <button id="popularCeleb" class="text-white shadow-lg rounded-full focus:outline-none">
+                    <i class="  fas fa-info-circle lg:fa-xs fa-md  text-[#ff4560] p-1"></i>
+                </button>
+            </h2>
+            <div class="flex justify-end mr-4 ">
+                <button class="exclude-from-download" onclick="downloadElementAsImage('celeb', 'celebchart.png')">
+                    <i class="fa-solid fa-circle-arrow-down fa-sm shadow-lg p-1 text-gray-500" ></i>
+                </button>
+           
+             </div>
+            <div id="popularchart"> </div>
+        </div>
+        <script>
+            fetch('/popular-person-chart/')
+            .then(response => response.json())
+            .then(data => {
+                const seriesData = data.series[0].data.map(item => ({
+                x: item.split(' (')[0],
+                y: parseInt(item.match(/\((\d+)\)/)[1])
+                }));
+    
+                
+            
+                const options = {
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: {
+                    show: false
+                    },
+                    fontFamily: 'inherit',
+                    background: '#'
+                    
+                },
+    
+                colors: [ '#008FFB'],
+                
+                plotOptions: {
+                    bar: {
+                    borderRadius: 4,
+                    horizontal: true,
+                    dataLabels: {
+                        position: 'top'
+                    },
+                    backgroundColor : '#FF4560',
+                    },
+                    
+                },
+                theme: {
+                    mode: 'dark',
+                    palette: 'palette1' // up to palette10
+                },
+                dataLabels: {
+                    enabled: true,
+                    offsetX: 60,
+                    
+                    style: {
+                    fontSize: '10px',
+                    colors: ["#c4c4c6"]
+                    
+                    },
+                    formatter: function (value, { seriesIndex, dataPointIndex, w }) {
+                    const name = data.series[seriesIndex].data[dataPointIndex].split(' (')[0];
+                    return name;
+                    }
+                },
+       
+               
+                series: [
+                    {
+                    name: data.series[0].name,
+                    data: seriesData
+                    }
+                ],
+                xaxis: {
+                    type: 'category',
+                    categories: data.xaxis.categories.map(date => {
+                    const d = new Date(date);
+                    const day = d.getDate();
+                    const month = d.toLocaleString('default', { month: 'short' });
+                    return `${day} ${month}`;
+                    }),
+                    position: 'bottom',
+                    labels: {
+                    show: true,
+                    rotate: -45,
+                    rotateAlways: true,
+                    hideOverlappingLabels: true,
+                    style: {
+                        fontSize: '12px',
+                        colors: ["#DBDBDC"]
+                    }
+                    }
+                },
+    
+                tooltip: {
+                    enabled: true,
+                    y: {
+                      formatter: function(value, { seriesIndex, dataPointIndex, w }) {
+                        const name = data.series[seriesIndex].data[dataPointIndex].split(' (')[0];
+                        return name;
+                      }
+                    }
+                  },
+                  
+                
+                yaxis: {
+                    type: 'category',
+                    labels: {
+                    style: {
+                        fontSize: '10px',
+                        colors: Array(20).fill("#DBDBDC"), // Repeating the color 20 times
+                    }
+                    }
+                }
+              
+                };
+            
+                const chart = new ApexCharts(document.querySelector("#popularchart"), options);
+                chart.render();
+            });
+            
+            </script>
+
+    
+        <div id ="party" class=" border-t border-gray-700 rounded-lg shadow-lg lg:border-none"> 
+            <h2 class="text-[#FF4560] px-4 flex flex-row justify-center text-xs lg:text-sm font-bold py-2 lg:mt-6">Political Parties Media Coverage %
+                <button id="politicalParty" class="text-white shadow-lg rounded-full focus:outline-none">
+                    <i class="fas fa-info-circle lg:fa-xs fa-md  text-[#ff4560] p-1"></i>
+                </button>
+            </h2>  
+            <div class="flex justify-end mr-4 ">
+                <button class="exclude-from-download" onclick="downloadElementAsImage('party', 'partychart.png')">
+                    <i  class="fa-solid fa-circle-arrow-down fa-sm shadow-lg p-1 text-gray-500"></i>
+                </button>
+            </div>
+            <div id="party-chart"> </div><!-- Radial Bar Gauge Chart Section -->
+        </div>
+        <script>
+                        var chart;
+
+            fetch('/video-count/') // Replace with the URL path for your party scores view
+              .then(response => response.json())
+              .then(data => {
+                var partyScores = data;
+            
+                // Convert party scores data to an array of objects
+                var partyData = Object.entries(partyScores).map(([party, score]) => ({
+                  party: party,
+                  score: score
+                }));
+            
+                // Sort the party data by score in descending order
+                partyData.sort((a, b) => b.score - a.score);
+            
+                // Extract party names and scores for chart
+                var partyNames = partyData.map(data => data.party);
+                var partyScores = partyData.map(data => data.score);
+            
+                // Calculate the total number of videos
+                var totalVideos = partyScores.reduce((a, b) => a + b, 0);
+            
+                // Normalize scores to represent the percentage of videos for each party
+                var normalizedScores = partyScores.map(score => (score / totalVideos) * 100);
+            
+                // Get the top party's name and count
+                var topPartyName = partyNames[0];
+                var topPartyCount = partyScores[0];
+            
+                // Generate colors for each party
+                var colors = ['#FF4560', '#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', '#D3D3D3'];
+            
+                var options = {
+                  chart: {
+                    series: normalizedScores,
+                    height: 350,
+                    type: 'radialBar',
+                    fontFamily: 'Geologica, sans-serif',
+                    fontSize: '15px'
+                  },
+                  series: normalizedScores,
+                  colors: colors,
+                  labels: partyNames,
+            
+                  plotOptions: {
+                    radialBar: {
+                      offsetY: 0,
+                      startAngle: 0,
+                      endAngle: 270,
+                      hollow: {
+                        size: '30%',
+                      }, // Decrease this value to increase the width of the radial bars
+                      dataLabels: {
+                        name: {
+                          show: true, // Set this to true to show the name labels
+                          style: {
+                            colors: ['#FFFFFF'] // Set this to the color you want for the name labels
+                          }
+                        },
+                        value: {
+                          show: true, // Set this to true to show the value labels
+                          formatter: function (val, opts) {
+                            // Return the percentage of videos for each party rounded to the nearest whole number
+                            return Math.round(val) + '%';
+                          },
+                          color: '#fff', // Set this to the color you want for the value labels
+                        },
+ 
+                      }
+                    }
+                  },
+                  legend: {
+                    show: true,
+                    floating: true,
+                    fontSize: '10px',
+                    position: 'left',
+                    offsetX: 80,
+                    offsetY: 10,
+                    labels: {
+                      useSeriesColors: true,
+                      style: {
+                        fontWeight: 'bold' // Set the font weight to bold
+                        }
+
+                      
+                    },
+                    formatter: function(seriesName, opts) {
+                      return seriesName + ":  " + normalizedScores[opts.seriesIndex].toFixed(0) + "%";
+                    },
+                    markers: {
+                      size: 0,
+                      strokeColor: '#fff',
+                    },
+                    onItemClick: {
+                      toggleDataSeries: true
+                    },
+                  },
+                  stroke: {
+                    lineCap: "round",
+                  },
+                  fill: {
+                    type: "gradient",
+                    gradient: {
+                      shade: "light",
+                      type: "horizontal",
+                      shadeIntensity: 0.5,
+                      gradientToColors: colors,
+                      inverseColors: true,
+                      opacityFrom: 1,
+                      opacityTo: 1,
+                      stops: [0, 100]
+                    }
+                  },
+                  responsive: [{
+                    breakpoint: 480,
+                    options: {
+                      legend: {
+                        offsetX: 20,
+                        offsetY: 0
+                      }
+                    }
+                  }]
+                };
+            
+                chart = new ApexCharts(document.querySelector("#party-chart"), options);
+                chart.render();
+              });
+            
+
+        </script>
+    
+        {% comment %} Mustard/Petrol Chart {% endcomment %}
+        <div id= "inflation" class=" border-t border-gray-700 rounded-lg shadow-lg lg:border-none">
+            <h2 class="text-[#FF4560] px-4 flex flex-row justify-center text-xs lg:text-sm font-bold py-2 lg:mt-6">Essentials Inflation
+                <button id="essentialinflation" class="text-white shadow-lg rounded-full focus:outline-none">
+                    <i class="fas fa-info-circle lg:fa-xs fa-md  text-[#ff4560] p-1"></i>
+                </button>
+            </h2>
+            <div class="flex justify-end mr-4 ">
+                <button class="exclude-from-download" onclick="downloadElementAsImage('inflation', 'inflationChart.png')">
+                    <i class="fa-solid fa-circle-arrow-down fa-sm shadow-lg p-1 text-gray-500"></i>
+                </button>
+            </div>
+            <div id="inflationchart" class=" shadow-lg custom-font border-gray-900"></div>
+        </div>
+        <script>
+            fetch('/inflation-chart-data')  // Replace with the URL of your inflation chart view
+                .then(response => response.json())
+                .then(data => {
+                    var chartData = data.chart_data;
+        
+                    var options = {
+                        chart: {
+                            type: 'area',
+                            height: 350,
+                            width: '100%',
+                            foreColor: "#EEEEEE",
+                            fontFamily: 'Geologica, sans-serif',
+                            fontSize: '15px',
+                            stacked: false,
+                            dropShadow: {
+                                enabled: true,
+                                enabledSeries: [0],
+                                top: -2,
+                                left: 2,
+                                blur: 5,
+                                opacity: 0.06
+                            },
+                            toolbar: {
+                                show: false,
+                            },
+                            background: {
+                                opacity: 0,
+                            },
+                            
+                        },
+                    
+                        dataLabels: {
+                            enabled: false
+                        },
+                    
+                        stroke: {
+                            curve: 'smooth',
+                            width: 3
+                        },
+                        series: chartData.map(item => ({
+                            name: item.name,
+                            data: item.data
+                        })),
+                        xaxis: {
+                            type: 'datetime',
+                            labels: {
+                                datetimeFormatter: {
+                                    year: 'yyyy',
+                                    month: 'MMM yyyy',
+                                    day: 'dd MMM yyyy'
+                                }
+                            }
+                        },
+                        yaxis: {
+                            forceNiceScale: true,
+                            labels: {
+                              formatter: function (value) {
+                                return Math.floor(value); // Round down to the nearest integer
+                              }
+                            }
+                          },
+                        
+                        theme: {
+                            mode: 'dark',
+                            palette: 'palette1', // up to palette10
+                        },
+                        fill: {
+                            type: "gradient",
+                            gradient: {
+                                shadeIntensity: 1,
+                                inverseColors: false,
+                                opacityFrom: 0.6,
+                                opacityTo: 0.05,
+                                stops: [20, 100, 100, 100]
+                            }
+                        },
+                        annotations: {
+                            points: [
+                            {
+                              x: new Date(chartData[0].data[chartData[0].data.length - 1].x).getTime(),
+                              y: chartData[0].data[chartData[0].data.length - 1].y,
+                
+                              image: {
+                                path: "{% static 'milk.png' %}",
+                                // Replace with the path to your image for Sarso
+                              }
+                            },
+                            {
+                              x: new Date(chartData[1].data[chartData[1].data.length - 1].x).getTime(),
+                              y: chartData[1].data[chartData[1].data.length - 1].y,
+                
+                              image: {
+                                path: "{% static 'images/mustard.png' %}" // Replace with the path to your image for Petroleum
+                              }
+                            },
+                            {
+                              x: new Date(chartData[2].data[chartData[2].data.length - 1].x).getTime(),
+                              y: chartData[2].data[chartData[2].data.length - 1].y,
+                
+                              image: {
+                                path: "{% static 'images/petrol.png' %}" // Replace with the path to your additional image
+                              }
+                            }
+                          ]
+                        
+                        }
+                    
+                    };
+        
+                    var chart = new ApexCharts(document.querySelector("#inflationchart"), options);
+                    chart.render();
+                });
+        </script>
+        {% comment %} Map {% endcomment %}
+        <div id="seats" class=" border-t border-gray-700 rounded-lg shadow-lg lg:border-none  overflow-hidden">
+            <h2 class="text-[#FF4560] px-4 flex flex-row justify-center text-xs lg:text-sm font-bold py-2 mt-6">Current State Government : Political Party
+                <button id="seats" class="text-white shadow-lg rounded-full focus:outline-none">
+                        <i class="fas fa-info-circle lg:fa-xs fa-md  text-[#ff4560] p-1"></i>
+                </button>
+             </h2>
+             <div class="chart-container -mb-6">
+                <div class="flourish-embed flourish-map lg:w-[60%] lg:h-[60%] my-auto mx-auto opacity-90 " data-src="visualisation/14123232" style="pointer-events: none;">
+                    <script src="https://public.flourish.studio/resources/embed.js">
+                        
+                    </script>
+                </div> 
+             </div>
+       </div>
+    </div>
+
+    <div class="lg:py-4 lg:px-4 py-2 px-2 bg-gray-800 rounded-lg mt-16 mb-4 mx-2 shadow-lg ">
+        <div id="channel-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 lg:gap-4">
+          {% for channel in channels %}
+          <div class="channel-card bg-gray-700 shadow flex items-center p-2 lg:p-3 rounded-lg hover:bg-gray-900">
+            <a href="{% url 'channel_name' channel.slug %}" class="flex items-center space-x-2 ">
+              <img src="{{ channel.logo.url }}" alt="{{ channel.name }}" class="lg:h-8 lg:w-8 h-6 w-6 object-cover">
+              <h3 class=" leading-6 font-medium text-white flex text-[11px] ">
+                {{ channel.name }}
+               
+              </h3>
+              <i class="fa-regular fa-circle-dot fa-beat-fade fa-xs" style="color: #f50000;"></i>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      <script>
+        window.onload = function() {
+          var container = document.getElementById('channel-container');
+          var elementsArray = Array.prototype.slice.call(container.getElementsByClassName('channel-card'));
+          elementsArray.sort(function() { return 0.5 - Math.random();});
+      
+          var numChannels = window.innerWidth <= 768 ? 6 : 5; // Display 6 channels for mobile, 5 for larger screens
+      
+          elementsArray.slice(0, numChannels).forEach(function(el){
+            container.appendChild(el);
+          });
+          elementsArray.slice(numChannels).forEach(function(el){
+            el.style.display = 'none';
+          });
+        };
+      </script>
+      
+      
+      <div class="grid grid-cols-2 gap-2 mx-2 text-bold text-white lg:mb-48">
+          
+          <a href="/channels">
+            <button class="w-full relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
+              <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 w-full">
+               All Channels
+                <i class="fas fa-tv fa-xs" style="color: #ffffff;"></i>
+              </span>
+            </button>
+          </a>
+  
+          <a href="/fact-check">
+            <button class="w-full relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
+              <span class="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 w-full">
+                  Fact Check
+                  <i class="fas fa-hat-cowboy fa-xs" style="color: #ffffff;"></i>
+              </span>
+            </button>
+           </a>
+         
+      </div>
+
+    <div class="flex flex-col lg:mb-52 my-10 mx-2">
+        <div class="  ">
+          <h1 class="lg:text-xl text-sm text-[#FF4560] font-bold text-center mb-8">FAQs people often have?</h1>
+          
+          <div class="space-y-4 text-[#C5CAD0]">
+            <div class="rounded-md shadow-md p-4 bg-gray-900">
+              <div id="question1" class="flex items-center justify-between cursor-pointer">
+                <h2 class="text-md font-semibold">What is Foggymedia?</h2>
+                <svg id="toggle1" class="w-6 h-6 text-gray-500 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <p id="answer1" class="text-gray-500 mt-2 hidden">Foggymedia is a news analytics platform that leverages publicly available data to provide comprehensive analysis and visual representations of India's prevalent news channels through various charts and graphs.</p>
+            </div>
+    
+            <div class="rounded-md shadow-md p-4 bg-gray-900">
+              <div id="question2" class="flex items-center justify-between cursor-pointer">
+                <h2 class="text-md font-semibold">Data sources</h2>
+                <svg id="toggle2" class="w-6 h-6 text-gray-500 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <p id="answer2" class="text-gray-500 mt-2 hidden">Our platform utilizes publicly available tools and APIs to periodically scrape data from prominent sources such as YouTube, Twitter, and various news websites. Through this data scraping process, we gather comprehensive information that enables us to analyze and present valuable insights. These insights are derived from the vast amount of data we collect, allowing us to observe trends, patterns, and sentiments across different platforms. </p>
+            </div>
+    
+            <div class="rounded-md shadow-md p-4 bg-gray-900">
+              <div id="question3" class="flex items-center justify-between cursor-pointer">
+                <h2 class="text-md font-semibold">Data Discrepancies</h2>
+                <svg id="toggle3" class="w-6 h-6 text-gray-500 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <p id="answer3" class="text-gray-500 mt-2 hidden">Foggymedia acknowledges that there may be instances of incomplete data and information within our platform. Our algorithm scrapes periodically and is not live, which means that certain videos and topics may occasionally be missed. However, we are dedicated to continuous improvement and strive to enhance our system to ensure undisputed and reliable data. </p>
+            </div>
+    
+            <div class="rounded-md shadow-md p-4 bg-gray-900">
+              <div id="question4" class="flex items-center justify-between cursor-pointer">
+                <h2 class="text-md font-semibold">API availablity</h2>
+                <svg id="toggle4" class="w-6 h-6 text-gray-500 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <p id="answer4" class="text-gray-500 mt-2 hidden">API endpoints are under development and will soon be available to public,</p>
+            </div>
+    
+
+            </div>
+          </div>
+        </div>
+      </div>
+   
+     <script>
+       document.addEventListener('DOMContentLoaded', function() {
+         function toggleAnswer(questionId, answerId, toggleId) {
+           const question = document.getElementById(questionId);
+           const answer = document.getElementById(answerId);
+           const toggleIcon = document.getElementById(toggleId);
+   
+           question.addEventListener('click', function() {
+             answer.classList.toggle('hidden');
+             toggleIcon.classList.toggle('rotate-180');
+           });
+         }
+   
+         toggleAnswer('question1', 'answer1', 'toggle1');
+         toggleAnswer('question2', 'answer2', 'toggle2');
+         toggleAnswer('question3', 'answer3', 'toggle3');
+         toggleAnswer('question4', 'answer4', 'toggle4');
+         toggleAnswer('question5', 'answer5', 'toggle5');
+       });
+     </script>  
+     
+     // Create the modal
+     <script>
+        function createModalWithText(triggerElementId, text) {
+            var modalId = triggerElementId + 'Modal';
+      
+            // Create the modal
+            var modalHTML = `
+            <div id="${modalId}" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center  backdrop-filter backdrop-blur-lg dark:border-slate-50/[0.06] bg-white/100 supports-backdrop-blur:bg-white/60 dark:bg-transparent ">
+                <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50 "></div>
+      
+                <div class="modal-container w-11/12 md:max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-y-auto dark:bg-transparent text-white border-slate-400 border-2">
+                    <div class="modal-close absolute top-0 right-0 cursor-pointer flex flex-col items-center mt-4 mr-4 text-white text-sm z-50">
+                        <svg class="fill-current text-white" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+                            <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                        </svg>
+                        
+                    </div>
+      
+                    <div class="modal-content py-4 text-left px-6">
+                        <div class="flex justify-between items-center pb-3">
+                          
+                        </div>
+                        <p>${text}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+      
+      
+            // Append the modal to the body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+      
+            var triggerElement = document.getElementById(triggerElementId);
+            var modalElement = document.getElementById(modalId);
+            var modalOverlayElement = modalElement.querySelector('.modal-overlay');
+      
+            // Attach click event to the trigger element
+            triggerElement.addEventListener('click', function() {
+                toggleModal(modalElement);
+            });
+      
+            // Attach click event to the modal close elements
+            var closeElements = modalElement.getElementsByClassName('modal-close');
+            for (var i = 0; i < closeElements.length; i++) {
+                closeElements[i].addEventListener('click', function() {
+                    toggleModal(modalElement);
+                });
+            }
+      
+            modalOverlayElement.addEventListener('click', function() {
+                toggleModal(modalElement);
+            });
+      
+      
+        }
+      
+        function toggleModal(modal) {
+            modal.classList.toggle('opacity-0')
+            modal.classList.toggle('pointer-events-none')
+            document.body.classList.toggle('modal-active')
+        }
+      
+        document.onkeydown = function(evt) {
+            evt = evt || window.event;
+            var isEscape = false;
+            if ("key" in evt) {
+                isEscape = (evt.key === "Escape" || evt.key === "Esc");
+            } else {
+                isEscape = (evt.keyCode === 27);
+            }
+            if (isEscape && document.body.classList.contains('modal-active')) {
+                var modals = document.getElementsByClassName('modal');
+                for (var i = 0; i < modals.length; i++) {
+                    if (!modals[i].classList.contains('opacity-0')) {
+                        toggleModal(modals[i]);
+                        break;
+                    }
+                }
+            }
+        };
+
+        createModalWithText('trendingTopics', 'The trending topics section showcases the most popular subjects discussed on Indian news channels in the past 4 hours. It provides insights into the current trending topics and highlights the subjects that have garnered significant attention and discussions within the Indian news community.');
+        createModalWithText('monthlyTrend', 'The generated line chart displays the trend of video content over the past 30 days, showcasing the daily video counts for the top 5 topics. It provides a visual representation of how video content has varied across different topics during that time.');
+        createModalWithText('popularCeleb', 'Except: Modi   This graph represents snapshot of the most talked-about personalities in the news over the past 20 days with our trending graph.');
+        createModalWithText('politicalParty', 'Stay informed with our real-time graph displaying the past 24 hours frequency of political party mentions in Indian news. From major national parties like BJP to regional players, track the latest media trends and stay up-to-date with the dynamic political discourse shaping the headlines');
+        createModalWithText('essentialinflation', 'The chart illustrates the price inflation of mustard oil and petrol in India over the past year');
+        createModalWithText('seats', 'Discover the current ruling parties across India with our interactive map. From the YSRCP in Andhra Pradesh to the BJP in Uttar Pradesh, explore the diverse political landscape of each state at a glance.');
+    </script>
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+
+
+{%include "footer.html"%}

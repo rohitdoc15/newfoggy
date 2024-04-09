@@ -1,0 +1,77 @@
+{% include 'header.html' %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Analysis Options</title>
+    <link href="/static/css/tailwind.min.css" rel="stylesheet" />
+    <script>
+      window.onload = function() {
+          var person_names = {{ person_names|safe }};
+
+          function fetchImageUrls(name, i) {
+              fetch('/image_search/?terms=' + encodeURIComponent(name))
+                  .then(response => response.json())
+                  .then(data => {
+                      let personImage = document.getElementById('person-image-' + i);
+                      personImage.src = data[name];
+                      personImage.alt = name;
+                  });
+          }
+
+          for (let i = 0; i < person_names.length; i++) {
+              fetchImageUrls(person_names[i], i);
+          }
+      };
+    </script>
+  </head>
+  <body
+    class="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-2"
+  >
+    <h1 class="text-2xl font-bold mb-5">Select an Analysis Option</h1>
+    <div class="flex flex-col md:flex-row md:space-x-3 space-y-3 md:space-y-0">
+      <div class="flex flex-col items-center p-5 bg-white rounded shadow">
+        <a href="/analysis/topic/" class="text-lg font-bold">Topic Analysis</a>
+        <div class="flex flex-col space-y-3">
+          {% for topic in topics %}
+          <div>
+            <p>{{ topic.topic }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="flex flex-col items-center p-5 bg-white rounded shadow">
+        <a href="/analysis/person/" class="text-lg font-bold mb-3"
+          >Person Analysis</a
+        >
+        <div class="flex space-x-3">
+          {% for i in "012" %}
+          <img
+            id="person-image-{{ i }}"
+            class="w-20 h-20 rounded-full object-cover"
+            src="/static/img/loading.svg"
+            alt="Loading..."
+            loading="lazy"
+          />
+          {% endfor %}
+        </div>
+      </div>
+      <div class="flex flex-col items-center p-5 bg-white rounded shadow">
+        <a href="/analysis/channel/" class="text-lg font-bold"
+          >Channel Analysis</a
+        >
+        <div class="flex space-x-3">
+          {% for channel in channels %}
+          <div>
+            <img
+              src="{{ channel.logo.url }}"
+              class="w-20 h-20 rounded-full object-cover"
+              alt="{{ channel.name }}"
+              loading="lazy"
+            />
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

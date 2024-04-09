@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>News Mentions</title>
+    <!-- Add your CSS styling links here -->
+  </head>
+  <body>
+    <form id="filter-form">
+      <label for="start-date">Start Date:</label>
+      <input type="date" id="start-date" />
+
+      <label for="end-date">End Date:</label>
+      <input type="date" id="end-date" />
+
+      <label for="channels">Channels:</label>
+      <select id="channels" multiple>
+        <!-- Option values would be populated dynamically or manually set based on your channel list -->
+      </select>
+
+      <button type="submit">Apply filters</button>
+    </form>
+
+    <table id="news-table" class="table-auto">
+      <thead>
+        <tr>
+          <th class="px-4 py-2">News Channel</th>
+          <th class="px-4 py-2">Title</th>
+          <th class="px-4 py-2">Published Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be added here by JavaScript -->
+      </tbody>
+    </table>
+    <script>
+      document
+        .getElementById("filter-form")
+        .addEventListener("submit", filterVideos);
+
+      function filterVideos(e) {
+        if (e) e.preventDefault();
+
+        const startDate = document.getElementById("start-date").value;
+        const endDate = document.getElementById("end-date").value;
+        const channels = Array.from(
+          document.getElementById("channels").selectedOptions
+        ).map((option) => option.value);
+
+        let url = `/api/videos`;
+
+        const params = new URLSearchParams();
+        if (startDate) params.append("start_date", startDate);
+        if (endDate) params.append("end_date", endDate);
+        if (channels.length) params.append("channels", channels.join(","));
+
+        if (params.toString()) {
+          url += "?" + params.toString();
+        }
+
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            const tableBody = document
+              .getElementById("news-table")
+              .getElementsByTagName("tbody")[0];
+
+            // Clear existing table data
+            tableBody.innerHTML = "";
+
+            // Populate table with new data
+            data.forEach((video) => {
+              const row = document.createElement("tr");
+
+              const channelCell = document.createElement("td");
+              channelCell.textContent = video.channel;
+              row.appendChild(channelCell);
+
+              const titleCell = document.createElement("td");
+              titleCell.textContent = video.title;
+              row.appendChild(titleCell);
+
+              const dateCell = document.createElement("td");
+              dateCell.textContent = new Date(
+                video.published_date
+              ).toLocaleDateString();
+              row.appendChild(dateCell);
+
+              tableBody.appendChild(row);
+            });
+          });
+      }
+
+      // Call the function immediately when the script runs
+      filterVideos();
+    </script>
+  </body>
+</html>

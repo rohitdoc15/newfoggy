@@ -1,0 +1,563 @@
+{% load static %}
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="shortcut icon" href="{% static 'fav.png' %}" type="image/png" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Foggymedia : Insightful data about Indian media"
+    />
+    <meta
+      property="og:description"
+      content="Explore the latest trending topics in Indian media and gain insights with charts."
+    />
+    <meta
+      property="og:image"
+      content="https://www.linkpicture.com/q/image-2_38.png"
+    />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Foggymedia : Insightful data about Indian media"
+    />
+    <meta
+      name="twitter:description"
+      content="Explore the latest trending topics in Indian media and gain insights with charts."
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.linkpicture.com/q/image-2_38.png"
+    />
+
+    <!-- Google tag (gtag.js) -->
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-F7M39YB37E");
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      body {
+        background-color: #1f2937;
+        font-size: 14px; /* Adjust the font size as needed */
+      }
+      ::-webkit-scrollbar {
+        width: 8px; /* Adjust the width as needed */
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background-color: #101827; /* Dark background color */
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background-color: #101827; /* Scrollbar thumb color */
+        border-radius: 5px; /* Rounded corners */
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #555; /* Scrollbar thumb color on hover */
+      }
+    </style>
+
+    <script>
+      // Initialize Swiper carousel
+      var swiper = new Swiper(".swiper-container", {
+        slidesPerView: "auto",
+        spaceBetween: 20,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+      });
+    </script>
+
+    {% comment %} Swiper Style {% endcomment %}
+    <style>
+      .custom-font {
+        font-family: "Geologica", sans-serif;
+      }
+      .display-font {
+        font-family: "Roboto", sans-serif;
+      }
+    </style>
+    <style>
+      .search-results {
+        position: fixed;
+        z-index: 1000;
+        background-color: #1a202c;
+        width: 80%;
+        left: 0;
+        padding: 1rem;
+        border-radius: 0 0 0.5rem 0.5rem;
+      }
+
+      .search-results .dropdown-menu-new {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .search-results .dropdown-menu-new li {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+      }
+
+      .search-results .dropdown-menu-new a:hover {
+        background-color: #2d3748;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.5rem;
+      }
+
+      .search-results .dropdown-menu-new li:last-child {
+        border-bottom: none;
+      }
+
+      .search-results .dropdown-menu-new a {
+        color: #fff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #334155;
+      }
+
+      .search-results .dropdown-menu-new .logo {
+        width: 24px;
+        height: 24px;
+        margin-right: 0.5rem;
+      }
+
+      .search-results .dropdown-menu-new .channel-name {
+        margin-right: 0.5rem;
+      }
+
+      .search-results {
+        /* ... */
+        display: none; /* Initially hide the search results */
+      }
+      .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      .hamburger-menu {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .search-container {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo-container {
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
+      }
+
+      .logo {
+        width: 100px; /* Adjust the width as needed */
+        height: auto;
+        padding: -0.5rem;
+      }
+
+      #loader {
+        position: relative;
+        width: 108px;
+        display: flex;
+        justify-content: space-between;
+      }
+      #loader::after,
+      #loader::before {
+        content: "";
+        display: inline-block;
+        width: 48px;
+        height: 48px;
+        background-color: #fff;
+        background-image: radial-gradient(
+          circle 14px,
+          #0d161b 100%,
+          transparent 0
+        );
+        background-repeat: no-repeat;
+        border-radius: 50%;
+        animation: eyeMove 10s infinite, blink 10s infinite;
+      }
+      @keyframes eyeMove {
+        0%,
+        10% {
+          background-position: 0px 0px;
+        }
+        13%,
+        40% {
+          background-position: -15px 0px;
+        }
+        43%,
+        70% {
+          background-position: 15px 0px;
+        }
+        73%,
+        90% {
+          background-position: 0px 15px;
+        }
+        93%,
+        100% {
+          background-position: 0px 0px;
+        }
+      }
+      @keyframes blink {
+        0%,
+        10%,
+        12%,
+        20%,
+        22%,
+        40%,
+        42%,
+        60%,
+        62%,
+        70%,
+        72%,
+        90%,
+        92%,
+        98%,
+        100% {
+          height: 48px;
+        }
+        11%,
+        21%,
+        41%,
+        61%,
+        71%,
+        91%,
+        99% {
+          height: 18px;
+        }
+      }
+    </style>
+  </head>
+
+  <header
+    class="h-[80px] max-w-[1140px] mx-auto fixed top-0 left-0 right-0 z-50 backdrop-blur-md shadow-md mb-[60px]"
+  >
+    <nav
+      class="flex flex-row justify-items-center items-center py-3 px-3 gap-2"
+    >
+      <div class="flex-none w-[25%] h-9 md:w-40 lg:w-48">
+        <a href="/" class="logo-link">
+          <img
+            class="md:-mt-3 lg:w-40"
+            src="{% static 'images/foogymedia_logo.png' %}"
+            alt="Logo"
+          />
+        </a>
+      </div>
+      <div class="relative flex-initial w-[70%] lg:ml-8 ml-2">
+        {% comment %}
+        <div class="relative">
+          <div
+            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+          >
+            <svg
+              class="w-5 h-5 text-gray-400"
+              aria-hidden="true"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </div>
+          {% endcomment %}
+          <input
+            type="text"
+            id="search-input"
+            name="search"
+            autocomplete="off"
+            placeholder="Search News channel/topic..."
+            required
+            class="relative search-input text-black py-2 pl-8 w-full focus:outline-none placeholder:text-xs hover:border-gray-700 border-2 border-slate-700 hover:rounded-lg rounded-lg focus:ring focus:ring-gray-900 focus:border-none"
+          />
+          <div
+            id="search-results"
+            class="absolute search-results mx-auto"
+          ></div>
+        </div>
+
+        <div
+          class="hidden lg:flex lg:flex-auto w-[25%] gap-4 lg:flex-row-reverse"
+        >
+          <a
+            href="{% url 'about' %}"
+            class="text-black hover:bg-gray-700 hover:px-2 hover:text-white block py-2 rounded-md text-sm font-medium"
+            >About</a
+          >
+          <a
+            href="{% url 'privacy' %}"
+            class="text-black hover:bg-gray-700 hover:px-2 hover:text-white block py-2 rounded-md text-sm font-medium"
+            >Privacy</a
+          >
+          <a
+            href="{% url 'contact' %}"
+            class="text-black hover:bg-gray-700 hover:px-2 hover:text-white block py-2 rounded-md text-sm font-medium"
+            >Contact</a
+          >
+          <a
+            href="{% url 'topic_glossary' %}"
+            class="text-black hover:bg-gray-700 hover:px-2 hover:text-white block py-2 rounded-md text-sm font-medium"
+            >Glossary</a
+          >
+        </div>
+
+        <!-- Hamburger Menu -->
+
+        <div class="flex-initial lg:hidden">
+          <button id="mobileMenuButton">
+            <i
+              class="fa-solid fa-ellipsis-vertical justify-center"
+              style="color: #00000"
+            ></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu (hidden by default) -->
+
+      <div
+        id="mobileMenu"
+        class="absolute top-20 left-0 w-full hidden md:hidden z-10 bg-gray-800 rounded-b-lg pl-4"
+      >
+        <!-- Mobile Menu Items -->
+        <a
+          href="{% url 'about' %}"
+          class="text-white hover:bg-gray-700 hover:px-2 hover:text-white block py-2 rounded-md text-sm font-medium"
+          >About</a
+        >
+        <a
+          href="{% url 'privacy' %}"
+          class="text-white hover:bg-gray-700 hover:px-2 hover:text-white block py-2 rounded-md text-sm font-medium"
+          >Privacy</a
+        >
+        <a
+          href="{% url 'contact' %}"
+          class="text-white hover:bg-gray-700 hover:px-2 hover:text-white block py-2 rounded-md text-sm font-medium"
+          >Contact</a
+        >
+        <a
+          href="{% url 'topic_glossary' %}"
+          class="text-white hover:bg-gray-700 hover:px-2 hover:text-white block py-2 rounded-md text-sm font-medium"
+          >Glossary</a
+        >
+      </div>
+    </nav>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const mobileMenuButton = document.getElementById("mobileMenuButton");
+        const mobileMenu = document.getElementById("mobileMenu");
+        const searchInput = document.getElementById("search-input");
+        mobileMenuButton.addEventListener("click", function () {
+          mobileMenu.classList.toggle("hidden");
+        });
+
+        function collapseMobileMenu() {
+          mobileMenu.classList.add("hidden");
+        }
+
+        searchInput.addEventListener("click", function (event) {
+          event.stopPropagation();
+          if (!mobileMenu.classList.contains("hidden")) {
+            collapseMobileMenu();
+          }
+        });
+      });
+    </script>
+
+    <!-- Include the html2canvas library -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+      // Initialize Swiper carousel
+      var swiper = new Swiper(".swiper-container", {
+        slidesPerView: "auto",
+        spaceBetween: 20,
+        loop: true, // Enable circular infinite scroll
+
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+      });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <script>
+      function downloadElementAsImage(elementId, filename) {
+        // Specify background color for the captured element
+        var backgroundColor = "#1A232F";
+        var element = document.getElementById(elementId);
+
+        // Exclude elements with a specific class from the captured element
+        var excludeElements = element.getElementsByClassName(
+          "exclude-from-download"
+        );
+        for (var i = 0; i < excludeElements.length; i++) {
+          excludeElements[i].style.display = "none";
+        }
+
+        // Store the original legend style
+        var originalLegendStyle = null; // Default value when the legend element is not found
+        var legendElement = element.querySelector(".apexcharts-legend-text");
+        if (legendElement) {
+          originalLegendStyle = window.getComputedStyle(legendElement);
+        }
+
+        // Use dom-to-image to capture the specified element
+        domtoimage
+          .toPng(element, {
+            bgcolor: backgroundColor,
+            quality: 1, // Set the quality to 1 (highest) for better resolution
+            filter: function (node) {
+              return node.className !== "exclude-from-download"; // Exclude elements with the "exclude-from-download" class
+            },
+          })
+          .then(function (dataUrl) {
+            // Create a new canvas to add the watermark
+            var watermarkCanvas = document.createElement("canvas");
+            var watermarkCtx = watermarkCanvas.getContext("2d");
+
+            // Create an image from the captured data URL
+            var img = new Image();
+            img.src = dataUrl;
+
+            // Draw the captured image onto the watermark canvas
+            img.onload = function () {
+              watermarkCanvas.width = img.width;
+              watermarkCanvas.height = img.height;
+              watermarkCtx.drawImage(img, 0, 0);
+
+              // Configure watermark text properties
+              var watermarkText = "FOGGYMEDIA.IN";
+              var fontSize = 18;
+              var spacing = 180;
+              var angle = -20;
+              var opacity = 0.1;
+              var color = "rgba(255, 255, 255, " + opacity + ")";
+              var fontFamily = "Arial";
+
+              // Set the font properties
+              watermarkCtx.font = fontSize + "px " + fontFamily;
+              watermarkCtx.fillStyle = color;
+
+              // Rotate the context to apply the desired angle
+              watermarkCtx.translate(
+                watermarkCanvas.width / 2,
+                watermarkCanvas.height / 2
+              );
+              watermarkCtx.rotate((Math.PI / 180) * angle);
+              watermarkCtx.translate(
+                -watermarkCanvas.width / 2,
+                -watermarkCanvas.height / 2
+              );
+
+              // Loop through the canvas and add watermark text
+              for (var x = 0; x < watermarkCanvas.width; x += spacing) {
+                for (var y = 0; y < watermarkCanvas.height; y += spacing) {
+                  watermarkCtx.fillText(watermarkText, x, y);
+                }
+              }
+
+              // Generate the data URL of the watermarked image
+              var watermarkedDataURL = watermarkCanvas.toDataURL();
+
+              // Restore the original legend style if available
+              if (legendElement && originalLegendStyle) {
+                element.querySelector(".apexcharts-legend-text").style =
+                  originalLegendStyle;
+              }
+
+              // Create a temporary anchor element
+              var link = document.createElement("a");
+              link.href = watermarkedDataURL;
+              link.download = filename;
+
+              // Simulate a click on the anchor element to trigger the download
+              link.click();
+            };
+          })
+          .catch(function (error) {
+            console.error("Error:", error);
+          });
+      }
+    </script>
+
+    <!-- <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const mobileMenuButton = document.getElementById("mobileMenuButton");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const searchInput = document.getElementById("search-input");
+    const searchResults = document.getElementById("search-results");
+
+    mobileMenuButton.addEventListener("click", function() {
+      mobileMenu.classList.toggle("hidden");
+      searchInput.blur(); // Make search input inactive
+      searchResults.classList.add("hidden"); // Hide search results
+    });
+
+    searchInput.addEventListener("click", function(event) {
+      event.stopPropagation();
+    });
+
+    document.addEventListener("click", function(event) {
+      const isClickInsideSearchBar = searchInput.contains(event.target);
+      const isClickInsideSearchResults = searchResults.contains(event.target);
+
+      if (!isClickInsideSearchBar && !isClickInsideSearchResults) {
+        searchInput.blur(); // Make search input inactive
+        searchResults.classList.add("hidden"); // Hide search results
+      }
+
+      if (!mobileMenu.contains(event.target)) {
+        mobileMenu.classList.add("hidden");
+      }
+    });
+
+    searchResults.addEventListener("click", function(event) {
+      event.stopPropagation();
+    });
+  });
+</script> -->
+  </header>
+  <style>
+    .scroll-smooth {
+      scroll-behavior: smooth;
+      overflow-y: scroll;
+    }
+  </style>
+</html>

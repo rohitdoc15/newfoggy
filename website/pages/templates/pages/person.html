@@ -1,0 +1,248 @@
+{% include 'header.html' %}
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Person Analysis</title>
+    <link href="/static/css/tailwind.min.css" rel="stylesheet" />
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body
+    class="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-2 text-white">
+      <h1 class="text-2xl font-bold mb-5">Person Analysis</h1>
+
+      <div class="w-full max-w-md">
+        <form
+          id="search-form"
+          class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        >
+          <div class="mb-4">
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="search-term"
+              >Enter a person's name</label
+            >
+            <input
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="search-term"
+              type="text"
+              placeholder="Person's name"
+            />
+            <i
+              id="loading-icon"
+              class="fas fa-spinner fa-spin"
+              style="display: none"
+            ></i>
+          </div>
+          <div class="flex items-center justify-between">
+            <ul id="results-list"></ul>
+          </div>
+        </form>
+      </div>
+      <div id="person-details " class='text-white'>
+        <form id="filter-form">
+          <label for="start-date">Start Date:</label>
+          <input type="date" id="start-date" />
+          <label for="end-date">End Date:</label>
+          <input type="date" id="end-date" />
+          <div id="channels" class="flex flex-wrap"></div>
+          <button type="submit">Apply filters</button>
+        </form>
+        <table id="news-table" class="table-auto text-white">
+          <thead>
+            <tr>
+              <th id="channelHeader" class="px-4 py-2 cursor-pointer">
+                News Channel <i class="fas fa-sort"></i>
+              </th>
+              <th class="px-4 py-2">Title</th>
+              <th id="dateHeader" class="px-4 py-2 cursor-pointer">
+                Published Date <i class="fas fa-sort"></i>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody></tbody>
+
+        </table>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Fetch channels when the page loads
+        fetch("/api/channels")
+          .then((response) => response.json())
+          .then((data) => {
+            const channelsDiv = document.getElementById("channels");
+      
+            // Create a checkbox for each channel
+            data.forEach((channel) => {
+              const label = document.createElement("label");
+              label.textContent = channel.name;
+              label.className = "inline-block m-2";
+      
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.value = channel.id;
+              checkbox.checked = true;
+              checkbox.className = "mr-1";
+              checkbox.addEventListener("change", () => filterVideos());
+      
+              label.prepend(checkbox);
+              channelsDiv.appendChild(label);
+            });
+      
+            // Get form element
+            const filterForm = document.getElementById('filter-form');
+      
+            // Add event listener for submit event
+            filterForm.addEventListener('submit', function(event) {
+              // Prevent the form from being submitted normally
+              event.preventDefault();
+      
+              // Call filterVideos() to update the table
+              filterVideos();
+            });
+      
+            // Initial call to filterVideos to populate the table
+            filterVideos();
+        });
+      
+        // Live search function
+        liveSearch();
+      });
+      
+      // Get selected channels
+      function getSelectedChannels() {
+        return Array.from(
+          document.querySelectorAll("#channels input:checked")
+        ).map((input) => input.value);
+      }
+      
+      // Video filter function
+      function filterVideos(sortField = 'published_date', sortDirection = 'desc') {
+        // Get term from input field
+        const termField = document.getElementById("search-term");
+        const term = termField ? termField.value.trim() : "";
+      
+        // Get dates from input fields
+        const startDateField = document.getElementById("start-date");
+        const startDate = startDateField ? startDateField.value : "";
+      
+        const endDateField = document.getElementById("end-date");
+        const endDate = endDateField ? endDateField.value : "";
+      
+        // Get selected channels
+        const channels = getSelectedChannels();
+        const params = new URLSearchParams();
+        if (term) params.append("term", term);
+        if (startDate) params.append("start_date", startDate);
+        if (endDate) params.append("end_date", endDate);
+        if (channels.length) params.append("channels", channels.join(","));
+        params.append("sort", sortField);
+        params.append("sortDirection", sortDirection);
+      
+        let url = `/api/videos`;
+      
+        if (params.toString()) {
+            url += "?" + params.toString();
+        }
+      
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            const tableBody = document
+              .getElementById("news-table")
+              .getElementsByTagName("tbody")[0];
+      
+            // Clear existing table data
+            tableBody.innerHTML = "";
+      
+            // Populate table with new data
+            data.forEach((video) => {
+              const row = document.createElement("tr");
+      
+              const channelCell = document.createElement("td");
+              channelCell.textContent = video.channel_name;
+              row.appendChild(channelCell);
+      
+              const titleCell = document.createElement("td");
+              titleCell.textContent = video.title;
+              row.appendChild(titleCell);
+      
+              const dateCell = document.createElement("td");
+              dateCell.textContent = new Date(
+                video.published_date
+              ).toLocaleDateString();
+              row.appendChild(dateCell);
+      
+              tableBody.appendChild(row);
+            });
+          });
+      }
+      
+      // Live search function
+      function liveSearch() {
+        const searchField = document.getElementById("search-term");
+        const loadingIcon = document.getElementById("loading-icon");
+        const resultsList = document.getElementById("results-list");
+      
+        let timeout = null;
+      
+        searchField.addEventListener("input", function () {
+          if (timeout !== null) {
+            clearTimeout(timeout);
+          }
+      
+          timeout = setTimeout(function () {
+            let trimmedSearchTerm = searchField.value.trim();
+      
+            if (trimmedSearchTerm.length > 0) {
+              loadingIcon.style.display = "inline-block";
+      
+              fetch(
+                "/live_search/?term=" + encodeURIComponent(trimmedSearchTerm)
+              )
+                .then((response) => response.json())
+                .then((data) => {
+                  loadingIcon.style.display = "none";
+      
+                  while (resultsList.firstChild) {
+                    resultsList.removeChild(resultsList.firstChild);
+                  }
+      
+                  for (let term in data) {
+                    const listItem = document.createElement("li");
+                    const image = document.createElement("img");
+                    image.src = data[term];
+                    image.className = "w-10 h-10 mr-4 rounded-full";
+                    image.alt = "Person Image";
+                    listItem.textContent = decodeURIComponent(term);
+                    listItem.className =
+                      "flex items-center mt-2 cursor-pointer";
+      
+                    listItem.addEventListener("click", function () {
+                      // Clear search suggestions after loading details
+                      while (resultsList.firstChild) {
+                        resultsList.removeChild(resultsList.firstChild);
+                      }
+                      filterVideos(decodeURIComponent(term));
+                    });
+      
+                    listItem.prepend(image);
+                    resultsList.appendChild(listItem);
+                  }
+                });
+            }
+      
+            timeout = null;
+          }, 300);
+        });
+      }
+      
+    </script>
+  </body>
+</html>

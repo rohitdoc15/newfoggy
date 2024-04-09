@@ -1,0 +1,81 @@
+{% include 'header.html' %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Explore the comprehensive glossary of Indian news topics. Find trending topics, browse popular topics, and get detailed information on the latest news subjects.">
+<title>News Topics Glossary | Indian News Topics</title>
+<link 
+<body class="bg-gray-900 text-white">
+  <div class="container mx-auto my-5 p-5">
+    <h1 class="text-3xl text-[#ff4560] font-extrabold mb-5">
+      News Topics Glossary
+    </h1>
+
+    <div class="flex mb-4">
+      <input
+        type="checkbox"
+        id="popular-topics"
+        name="topic-filter"
+        class="mr-2"
+      />
+      <label
+        for="popular-topics"
+        class="text-[gray-300] text-[#EBD752] font-semibold"
+        >Only include popular topics (50+ mentions)</label
+      >
+    </div>
+
+    {% for letter, topics in topics.items %}
+    <div class="lg:flex">
+      <h2 class="text-xl text-[#ff4560] font-bold mb-3">{{ letter }}</h2>
+      <ul class="list-disc text-[#ff4560] ml-5">
+        {% for topic, count in topics %}
+        <li class="mb-1 topic-item" data-count="{{ count }}">
+          <a
+            href="/topic/{{ topic|urlencode }}/"
+            class="text-blue-400 text-xs hover:underline"
+            >{{ topic }}</a
+          >
+          <span class="text-gray-300 text-xs ml-2">({{ count }} mentions)</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const topicItems = document.querySelectorAll(".topic-item");
+      const popularFilter = document.querySelector("#popular-topics");
+      const originalDisplay = {};
+
+      function filterTopics() {
+        const isChecked = popularFilter.checked;
+
+        topicItems.forEach(function (item) {
+          const count = parseInt(item.dataset.count);
+
+          if (!originalDisplay[item]) {
+            originalDisplay[item] = getComputedStyle(item).display;
+          }
+
+          if (isChecked && count < 50) {
+            item.style.display = "none";
+          } else {
+            item.style.display = originalDisplay[item];
+          }
+        });
+      }
+
+      popularFilter.addEventListener("change", filterTopics);
+
+      // Handle case when checkbox is unchecked
+      popularFilter.addEventListener("click", function (event) {
+        if (!popularFilter.checked) {
+          filterTopics();
+        }
+      });
+    });
+  </script>
+</body>
+{% include 'footer.html' %}

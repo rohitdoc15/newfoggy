@@ -1,0 +1,42 @@
+{% include "header.html" %}
+<head>
+  <title>List of Indian News channels | Foggymedia</title>
+  <meta name="description" content="Browse through the comprehensive list of news channels covered on our website. Stay informed with the diverse range of news sources we provide.">
+
+</head>
+<body class="bg-gray-100 p-2 sm:p-3">
+  <div class="overflow-x-auto">
+    <div class="min-w-screen flex items-center justify-center font-sans">
+      <div class="w-full">
+        <table class="min-w-max w-full table-auto bg-gray-800 text-white rounded-lg text-xs sm:text-sm">
+          <thead>
+            <tr class="leading-normal">
+              <th class="py-2 px-3 text-left sticky left-0 bg-gray-900 sm:px-6 sm:py-3">Rank</th>
+              <th class="py-2 px-3 text-left sticky left-0 bg-gray-900 sm:px-6 sm:py-3">Name</th>
+              <th class="py-2 px-3 text-center sm:px-6 sm:py-3">Upload/Day</th>
+              <th class="py-2 px-3 text-center sm:px-6 sm:py-3">Fake News Rating</th>
+              <th class="py-2 px-3 text-center sm:px-6 sm:py-3">Credibility</th>
+            </tr>
+          </thead>
+          <tbody class="text-xs sm:text-sm font-light">
+            {% for channel in channels %}
+            <tr class="border-b border-gray-200 hover:bg-gray-100">
+              <td class="py-2 px-3 text-left whitespace-nowrap sticky left-0 bg-gray-900 sm:px-6 sm:py-3">{{ channel.youtube_rank }}</td>
+              <td class="py-2 px-3 text-left whitespace-nowrap flex items-center sticky left-0 bg-gray-900 sm:px-6 sm:py-3">
+                <img class="w-6 h-6 rounded-full mr-2 sm:w-8 sm:h-8" src="{{ channel.logo.url }}" alt="{{ channel.name }}">
+                <a href="{% url 'channel_name' slug=channel.slug %}" class="text-blue-500 hover:underline dark:text-blue-300">{{ channel.name }}</a>
+              </td>
+              <td class="py-2 px-3 text-center sm:px-6 sm:py-3">{{ channel.avg_videos_per_day }}</td>
+              <td class="py-2 px-3 text-center sm:px-6 sm:py-3">{{ channel.fake_news_rating }}</td>
+              <td class="py-2 px-3 text-center sm:px-6 sm:py-3">{{ channel.credibility }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% include "footer.html" %}
+</body>
+
