@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse , JsonResponse ,FileResponse
-from . import templates
+# from . import templates
 from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta
 import html

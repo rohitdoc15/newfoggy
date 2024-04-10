@@ -80,7 +80,8 @@ def match_with_trending_topics(videos, topics, stopwords):
     for video in videos:
         title = video.title
         if any(chr.isalpha() for chr in title if ord(chr) > 128):
-            title = translate_to_english(title)
+            # title = translate_to_english(title)
+            pass
 
         best_score = 0
         best_topic = None

@@ -1,8 +1,6 @@
 import sys
 import time
 sys.path.append('/home/rohit/news/website')
-from googletrans import Translator
-translator = Translator()
 import os
 import django
 from django.utils import timezone
@@ -22,7 +20,7 @@ now = timezone.now()
 time_4_hours_ago = now - timedelta(hours=8)
 time_2_days_ago = now - timedelta(days=2)
 
-openai.api_key = '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'
+openai.api_key = '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'
 
 # Fetch all video titles from your database that were published in the last 4 hours
 videos = Video.objects.filter(published_date__range=(time_4_hours_ago, now))
@@ -36,9 +34,9 @@ for channel in channels:
     for video in videos:
         title = video.title
         # Translate the title to English
-        translated_title = translator.translate(title, dest='en').text
-        titles.append(translated_title)
-
+        # translated_title = translator.translate(title, dest='en').text
+        # print(f"Translated title: {translated_title}")
+        titles.append(title)
 # Fetch the topics from all videos
 all_topics = [video.topic for video in Video.objects.all()]
 
@@ -66,7 +64,6 @@ all_titles = '\n'.join(titles)
 max_len = 10000
 if len(all_titles) > max_len:
     all_titles = all_titles[:max_len]
-print(all_titles)
 
 # Retry up to 5 times
 for retry in range(5):
@@ -83,6 +80,7 @@ for retry in range(5):
             )
             # Extract the model's reply
             reply = completion.choices[0].message['content']
+            print(f"Generated reply: {reply}")
 
             # Check if the reply is under 160 characters
             if len(reply) <= 200:

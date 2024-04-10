@@ -22,7 +22,7 @@ stopwords = [word.lower() for word in stopwords]
 now = timezone.now()
 time_4_hours_ago = now - timedelta(hours=24)
 
-openai.api_key = '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'
+openai.api_key = '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'
 
 channels = NewsChannel.objects.all()
 all_topics = [video.topic for video in Video.objects.all()]
